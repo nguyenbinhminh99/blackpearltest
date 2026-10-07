@@ -15,9 +15,8 @@ COPY prisma ./prisma
 RUN npm ci --omit=dev && npx prisma generate
 COPY --from=build /app/dist ./dist
 COPY public ./public
-COPY scripts/docker-entrypoint.sh ./scripts/docker-entrypoint.sh
 COPY data ./data
-RUN chmod +x ./scripts/docker-entrypoint.sh \
-  && mkdir -p /app/reports
+RUN mkdir -p /app/reports
 EXPOSE 3000
-CMD ["./scripts/docker-entrypoint.sh"]
+# Inline CMD tránh lỗi CRLF của file .sh khi build trên Windows
+CMD ["sh", "-c", "npx prisma migrate deploy && if [ \"${AUTO_IMPORT:-1}\" = \"1\" ]; then echo \"Import batch_1 rồi batch_2...\"; node dist/cli.js data/batch_1.json data/batch_2.json --export; fi && exec node dist/main.js"]

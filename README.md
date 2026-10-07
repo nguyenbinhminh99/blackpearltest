@@ -12,6 +12,13 @@ cd blackpearltest
 docker compose up --build
 ```
 
+Nếu lần trước bị lỗi cổng / container cũ:
+
+```bash
+docker compose down
+docker compose up --build --force-recreate
+```
+
 Sau khi lên:
 
 1. Mở báo cáo web: http://localhost:3000
