@@ -7,7 +7,8 @@ Hệ thống kéo dữ liệu bán hàng từ file JSON (mô phỏng POS), lưu 
 Yêu cầu: Docker Desktop đã cài và đang chạy.
 
 ```bash
-cd pos-etl
+git clone https://github.com/nguyenbinhminh99/blackpearltest.git
+cd blackpearltest
 docker compose up --build
 ```
 
