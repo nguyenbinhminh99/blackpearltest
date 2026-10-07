@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  completed
+  cancelled
+}
+
+enum OrderChannel {
+  tai_quay
+  grab
+  shopeefood
+}
+
+model Order {
+  orderId         String       @id @map("order_id")
+  storeId         String       @map("store_id")
+  createdAt       DateTime     @map("created_at")
+  updatedAt       DateTime     @map("updated_at")
+  status          OrderStatus
+  channel         OrderChannel
+  items           Json
+  discountAmount  Int          @map("discount_amount")
+  totalAmount     Int          @map("total_amount")
+  calculatedTotal Int          @map("calculated_total")
+  createdAtVnDate String       @map("created_at_vn_date") @db.Char(10)
+  sourceBatch     String       @map("source_batch")
+  importedAt      DateTime     @default(now()) @map("imported_at")
+
+  @@index([storeId, createdAtVnDate])
+  @@index([status, createdAtVnDate])
+  @@map("orders")
+}
+
+model ImportError {
+  id          Int      @id @default(autoincrement())
+  batchName   String   @map("batch_name")
+  rowIndex    Int      @map("row_index")
+  orderId     String?  @map("order_id")
+  reason      String
+  rawPayload  Json     @map("raw_payload")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([batchName])
+  @@map("import_errors")
+}
+
+model ImportRun {
+  id             Int      @id @default(autoincrement())
+  batchName      String   @map("batch_name")
+  pulledAt       DateTime? @map("pulled_at")
+  totalRows      Int      @map("total_rows")
+  inserted       Int
+  updated        Int
+  skippedStale   Int      @map("skipped_stale")
+  rejected       Int
+  startedAt      DateTime @default(now()) @map("started_at")
+  finishedAt     DateTime @map("finished_at")
+
+  @@map("import_runs")
+}
